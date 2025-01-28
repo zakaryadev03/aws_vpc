@@ -112,3 +112,47 @@
           - dest: 0.0.0.0/0
             gateway_id: "{{igw_out.gateway_id}}"
       register: pubRT_out
+
+    - name: create new nat gateway and allocate an elastic ip to it 
+      ec2_vpc_nat_gateway:
+        state: "{{state}}"
+        subnet_id: "{{ pubsub1out.subnet.id }}"
+        wait: yes
+        region: "{{ region }}"
+        if_exist_do_not_create: true
+      register: NATGW_out
+
+    - name: Private sub route table
+      ec2_vpc_route_table:
+        vpc_id: "{{vpcout.vpc.id}}"
+        region: "{{ region }}"
+        tags:
+          Name: app_PrivRT
+        subnets:
+          - "{{privsub1out.subnet.id}}"
+          - "{{privsub2out.subnet.id}}"
+          - "{{privsub3out.subnet.id}}"
+        routes: 
+          - dest: 0.0.0.0/0
+            gateway_id: "{{NATGW_out.nat_gateway_id}}"
+      register: privRT_out
+
+    - debug:
+        var: "{{item}}"
+      loop:
+        - vpcout.vpc.id
+        - pubsub1out.subnet.id
+        - pubsub2out.subnet.id
+        - pubsub3out.subnet.id
+        - privsub1out.subnet.id
+        - privsub2out.subnet.id
+        - privsub3out.subnet.id
+        - igw_out.gateway_id
+        - pubRT_out.route_table.id
+        - NATGW_out.nat_gateway_id
+        - privRT_out.route_table.id
+
+    - name: Create var file for use
+      copy:
+        content: "vpcid: {{vpcout.vpc.id}}\npubsub1id: {{pubsub1out.subnet.id}}\npubsub2id: {{pubsub2out.subnet.id}}\npubsub3id: {{pubsub3out.subnet.id}}\nprivsub1id: {{privsub1out.subnet.id}}\nprivsub2id: {{privsub2out.subnet.id}}\nprivsub3id: {{privsub3out.subnet.id}}\nigwid: {{igw_out.gateway_id}}\npubRTid: {{pubRT_out.route_table.id}}\nNATGWid: {{NATGW_out.nat_gateway_id}}\nprivRTid: {{privRT_out.route_table.id}}\n"
+        dest: vars/output_vars
