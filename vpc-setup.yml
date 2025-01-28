@@ -27,3 +27,4 @@
         resource_tags:
           Name: app-pubsub1
       register: pubsub1out
+  
