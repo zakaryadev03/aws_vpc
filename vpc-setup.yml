@@ -87,3 +87,28 @@
         resource_tags:
           Name: app-privsub3
       register: privsub3out
+
+
+    - name: Internet Gateway Setup 
+      ec2_vpc_igw:
+        vpc_id: "{{vpcout.vpc.id}}"
+        region: "{{ region }}"
+        state: "{{state}}"
+        resource_tags:
+          Name: app_igw
+      register: igw_out
+
+    - name: Public subnet route table 
+      ec2_vpc_route_table:
+        vpc_id: "{{vpcout.vpc.id}}"
+        region: "{{ region }}"
+        tags:
+          Name: app_PubRT
+        subnets:
+          - "{{pubsub1out.subnet.id}}"
+          - "{{pubsub2out.subnet.id}}"
+          - "{{pubsub3out.subnet.id}}"
+        routes: 
+          - dest: 0.0.0.0/0
+            gateway_id: "{{igw_out.gateway_id}}"
+      register: pubRT_out
