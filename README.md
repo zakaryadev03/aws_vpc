@@ -13,7 +13,6 @@ The final output of both methods is functionally equivalent, showcasing how diff
 ## Key Features
 - Automated deployment of AWS VPC components (subnets, route tables, internet gateways, etc.).
 - State management to ensure consistency and track changes.
-- Support for both Ansible and Terraform, allowing users to choose their preferred tool.
 - Modular and reusable code for easy customization.
 
 ## Deployment Methods
@@ -21,10 +20,9 @@ The final output of both methods is functionally equivalent, showcasing how diff
 ### 1. **Ansible**
 - Uses Ansible playbooks to define and deploy AWS resources.
 - Leverages the `amazon.aws` collection for AWS-specific modules.
-- Ideal for users familiar with Ansible or those looking to integrate VPC deployment into existing Ansible workflows.
 
 ### 2. **Terraform**
-- Uses Terraform configuration files (HCL) to define and provision AWS resources.
+- Uses Terraform configuration files to define and provision AWS resources.
 - Employs Terraform's state management to track and update infrastructure.
 - Suitable for users who prefer Terraform's declarative approach and its robust ecosystem.
 
